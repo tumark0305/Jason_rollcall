@@ -1,5 +1,4 @@
-﻿import os,requests,pyperclip,cv2,pytesseract,openai
-from openai import OpenAI
+﻿import os,requests,pyperclip,cv2,pytesseract
 import numpy as np
 from tqdm import tqdm
 from selenium import webdriver
@@ -7,9 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
 URL = f'https://sites.google.com/view/jasontem/'
-
-GPT_api_key=f'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'
-client = OpenAI(api_key = GPT_api_key)
 keyinID = 'b11007157'
 keyinNAME = '我是機器人0'
 target = 'LLaMA 2-13B'
@@ -29,22 +25,6 @@ class tool:
         _net.forward()
         _text = pytesseract.image_to_string(_img)
         return _text
-    def chat_gpt(_q:str='please repeat my question' , _model:str="gpt-3.5-turbo")->str:
-        try:
-            response = client.chat.completions.create(
-                model=_model,
-                messages=[{
-                    "role": "user",
-                    "content": "Say this is a test",
-                }]
-            
-            )
-
-            print(response._request_id)
-        except Exception as e:
-            _output = f'Failed Error:{e}'
-        _output=''
-        return _output
 class jason:
     class define:
         def __init__(self, _data):
@@ -131,7 +111,6 @@ class jason:
 
 
 if __name__ == '__main__':
-    tool.chat_gpt()
     jason.main()
 
 
