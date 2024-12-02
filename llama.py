@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
+ï»¿from transformers import AutoModelForCausalLM, AutoTokenizer
 
 llama32_13B = 'https://llama3-2-lightweight.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVuaXF1ZV9oYXNoIjoiZ2g2a2U5cXB6eW5leWwxMmt0dHZyc3AyIiwiUmVzb3VyY2UiOiJodHRwczpcL1wvbGxhbWEzLTItbGlnaHR3ZWlnaHQubGxhbWFtZXRhLm5ldFwvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMzI5OTUwNX19fV19&Signature=cmM8MIKmAk7PLRMR9gv0u14DHAw1-y2s0k6d1vLLLHGmOt64nvxYW1Ww1t5TfuFcz04VuTv%7EyeIlPhMx0RBPpGqeclWOvH%7EwDi3jFz243YaaFSmbSLSmRGDpvLF69b5GU6VRymbCArnMU6-6nA7UiU7Wn5YX8hud3mWn%7EPU3MuPatIlfuo%7Ekc9evCEsfgCfawrfX8T4Yv-Zk7PwLiDWB6a3vJdi3Y%7EDo90U96OuyY3cSagUMww6KcsTexduq1PI48aZ9O5YYePyXTwKLOr86Hp66gOyCIK7Gfj5D4b8ZURNx%7E3evAadMdV1zJ%7EMkp08ckS8R0w8BDH7iyBqu3AM8Fg__&Key-Pair-Id=K15QRJLYKIFSLZ&Download-Request-ID=573910378561431'
 llama32_1190B = 'https://llama3-2-multimodal.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVuaXF1ZV9oYXNoIjoiYmhmODlkZ2szMGtrY3N1MHJmZzluOWZjIiwiUmVzb3VyY2UiOiJodHRwczpcL1wvbGxhbWEzLTItbXVsdGltb2RhbC5sbGFtYW1ldGEubmV0XC8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzMzMjk5NTA1fX19XX0_&Signature=OdFS%7EqcCr3xZfMuOphi95c1CyPeoPIHxRyWgkZAMGbNvC%7Ef9q8V%7Ewq2g4HtDa5Mb1pQBIdFBFiq4GY87hWxoV4xtmsTmmF37oHzdUe%7EidLOoE%7EaXEGT2IeET73xBgI4aZKGiGKMM2Nn-hkHKj7XJ%7E-kdc79XH3FsrcOUxyFWCTqDif3Ifwo5g6uMQdpgNGJxFhVtXnX8p10IUav0ePryQUV8FScfhyK13lB7cMiL1c4pBQyw47VTEaT2BlrnXWZNlemH48ersRWZrf0Fdn9ncoGqnRPVOIWEHrOE6JAxjfFADP5De8qU6aJl2JlVUz7zQHxWg7uP1SiEeYxgmHu2MA__&Key-Pair-Id=K15QRJLYKIFSLZ&Download-Request-ID=1579507079348788'
@@ -6,7 +6,7 @@ llama31_708B = 'https://llama3-1.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVu
 
 model_name = "meta-llama/Llama-2-13b-chat-hf"
 
-# ¦Û°Ê¥[¸ü Tokenizer ©M¼Ò«¬
+# è‡ªå‹•åŠ è¼‰ Tokenizer å’Œæ¨¡åž‹
 tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
 model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", load_in_8bit=True)
 
