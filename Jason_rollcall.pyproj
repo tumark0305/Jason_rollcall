@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Jason_rollcall</Name>
     <RootNamespace>Jason_rollcall</RootNamespace>
+    <InterpreterId>CondaEnv|CondaEnv|py311</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +22,14 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="llama.py" />
     <Compile Include="main.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="caches\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|py311" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
