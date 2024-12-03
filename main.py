@@ -4,7 +4,11 @@ from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-#from llama import chat_llama
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
+
+from llama import chat_llama
 test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
 URL = f'https://sites.google.com/view/jasontem/'
 keyinID = 'b11007157'
@@ -27,17 +31,35 @@ class tool:
         _text = pytesseract.image_to_string(_img)
         return _text
     def ask_llama(_data)->None:
-
+        _q = _data.question
+        _s = _data.select
+        if _q == jason.ID_find:
+            _output = keyinID
+        elif _q == jason.NAME_find:
+            _output = keyinNAME
+        else:
+            while True:
+                _output = chat_llama.ask(_q,_s)
+                if _output<len(_s):
+                    break
+        _data.answer = _output
         return None
 class jason:
+    ID_find = '學號'
+    NAME_find = '姓名'
+    _log_path = f'{os.getcwd()}\\log'
     class define:
-        def __init__(self, _data):
+        def __init__(self,_main_driver , _data):
+            self.driver = _main_driver
             self.source = _data
             self.question = None
             self.answer = None
             self.type = None
             self.error = False
+            self.select = []
+            self.select_check_box_loc = []
             jason.define.get_question(self ,_data)
+            jason.define.get_selection(self ,_data)
             return None
         def get_question(self , _input_driver)->None:
             def test_if_isfill():
@@ -59,6 +81,22 @@ class jason:
                 _output = _data
             self.question = _output
             return None
+        def get_selection(self , _input_driver)->None:
+            if self.type == 'sele':
+                _selections = _input_driver.find_elements(By.CSS_SELECTOR, ".nWQGrd.zwllIb")
+                for _statment in _selections:
+                    self.select.append(_statment.text)
+                    _page_source = _statment.get_attribute("outerHTML")
+                    _find_button = _statment.find_element(By.CSS_SELECTOR, '[jscontroller="EcW08c"]')
+                    _buttom = WebDriverWait(self.driver, 10).until(
+                        EC.element_to_be_clickable(_find_button)
+                    )
+                    self.select_check_box_loc.append(_buttom)
+            elif self.type == 'fill':
+                _fill_block = _input_driver.find_elements(By.CSS_SELECTOR, '[jsname="YPqjbf"]')[1]
+                self.select_check_box_loc.append(_fill_block)
+            return None
+
     def find_sign_url()->str:
         def get_possible_url()->list[str]:
             _text = requests.get(URL).text
@@ -87,10 +125,11 @@ class jason:
                         _output.append(_finder.split('>')[1])
                 return _output[0]
             _text = 'which might be the right URL?\n'
+            _urls.append(test_form_URL)
             for _i ,_cell in enumerate(_urls):
                 _text = f'{_text}{_i}.   {_cell}\nTitle : {get_title(_cell)}\n\n'
-            print(_text)
             os.system('cls' if os.name=='nt' else 'clear')
+            print(_text)
             while True:
                 _input_data = input(f'>>>    ')
                 try:
@@ -111,25 +150,64 @@ class jason:
         _sus_urls = find_google_doc(_all_urls)
         _url = ask_which(_sus_urls)
         return _url
+    def fill_answer(_all_data)->None:
+        for _question in _all_data:
+            if _question.type == 'fill':
+                _question.select_check_box_loc[0].send_keys(_question.answer)
+            elif _question.type == 'sele':
+                _question.select_check_box_loc[_question.answer].click()
+            pass
+        return None
     def write_form(_url:str)->None:
+        def press_send():
+            _send_buttom = driver.find_element(By.CSS_SELECTOR, '.uArJ5e.UQuaGc.Y5sE8d.VkkpIf.QvWxOd')
+            _buttom = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable(_send_buttom)
+            )
+            _buttom.click()
+            return None
+        def write_log(_all):
+            def form_txt():
+                _output = ''
+                for _qs in _all:
+                    _local_text = ''
+                    for _sele_num in range(len(_qs.select)):
+                        _local_text = f'{_local_text}{_sele_num}:{_qs.select[_sele_num]}\n'
+                    try:
+                        _output = f'{_output}{_qs.question}\n{_local_text}ans:-->{_qs.answer}:{_qs.select[_qs.answer]}\n'
+                    except:
+                        _output = f'{_output}{_qs.question}\n{_local_text}ans:-->{_qs.answer}\n'
+                return _output
+            _date = str(datetime.now())[5:16].replace(':','').replace('-','').replace(' ','_')
+            _path = f'{jason._log_path}\\{_date}.txt'
+            _text = form_txt()
+            _f = open(_path,'w')
+            _f.write(_text)
+            _f.close()
         driver = webdriver.Chrome()
         driver.get(_url)
         _page_source = driver.page_source
         _questions = driver.find_elements(By.CSS_SELECTOR, 'div.Qr7Oae[role="listitem"]')
         _all_questions = []
         for _quest in _questions:
-                _all_questions.append(jason.define(_quest))
+            _all_questions.append(jason.define(driver , _quest))
         #solve q
         for _cell in _all_questions:
             tool.ask_llama(_cell)
+        write_log(_all_questions)
+        jason.fill_answer(_all_questions)
+        _input_data = 'y'
+        #_input_data = input('送出表單? y/N')
+        if _input_data=='y':
+            press_send()
+        driver.quit()
         return None
     def main():
         _url = jason.find_sign_url()
-        jason.write_form(test_form_URL)
+        jason.write_form(_url)
 
 
 if __name__ == '__main__':
-    #chat_llama.ask('who r u ?')
     jason.main()
 
 

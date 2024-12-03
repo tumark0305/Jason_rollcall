@@ -1,22 +1,35 @@
-﻿from transformers import AutoModelForCausalLM, AutoTokenizer
+﻿import ollama
 
-model_name = "meta-llama/Llama-2-13b-chat-hf"
-
-# 自動加載 Tokenizer 和模型
-tokenizer = 3
-AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto", load_in_8bit=True)
-
-inputs = tokenizer("who r u ?", return_tensors="pt").to("cuda")
-outputs = model.generate(inputs["input_ids"], max_length=100)
-print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 class chat_llama:
-    llama32_13B = 'https://llama3-2-lightweight.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVuaXF1ZV9oYXNoIjoiZ2g2a2U5cXB6eW5leWwxMmt0dHZyc3AyIiwiUmVzb3VyY2UiOiJodHRwczpcL1wvbGxhbWEzLTItbGlnaHR3ZWlnaHQubGxhbWFtZXRhLm5ldFwvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMzI5OTUwNX19fV19&Signature=cmM8MIKmAk7PLRMR9gv0u14DHAw1-y2s0k6d1vLLLHGmOt64nvxYW1Ww1t5TfuFcz04VuTv%7EyeIlPhMx0RBPpGqeclWOvH%7EwDi3jFz243YaaFSmbSLSmRGDpvLF69b5GU6VRymbCArnMU6-6nA7UiU7Wn5YX8hud3mWn%7EPU3MuPatIlfuo%7Ekc9evCEsfgCfawrfX8T4Yv-Zk7PwLiDWB6a3vJdi3Y%7EDo90U96OuyY3cSagUMww6KcsTexduq1PI48aZ9O5YYePyXTwKLOr86Hp66gOyCIK7Gfj5D4b8ZURNx%7E3evAadMdV1zJ%7EMkp08ckS8R0w8BDH7iyBqu3AM8Fg__&Key-Pair-Id=K15QRJLYKIFSLZ&Download-Request-ID=573910378561431'
-    llama32_1190B = 'https://llama3-2-multimodal.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVuaXF1ZV9oYXNoIjoiYmhmODlkZ2szMGtrY3N1MHJmZzluOWZjIiwiUmVzb3VyY2UiOiJodHRwczpcL1wvbGxhbWEzLTItbXVsdGltb2RhbC5sbGFtYW1ldGEubmV0XC8qIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzMzMjk5NTA1fX19XX0_&Signature=OdFS%7EqcCr3xZfMuOphi95c1CyPeoPIHxRyWgkZAMGbNvC%7Ef9q8V%7Ewq2g4HtDa5Mb1pQBIdFBFiq4GY87hWxoV4xtmsTmmF37oHzdUe%7EidLOoE%7EaXEGT2IeET73xBgI4aZKGiGKMM2Nn-hkHKj7XJ%7E-kdc79XH3FsrcOUxyFWCTqDif3Ifwo5g6uMQdpgNGJxFhVtXnX8p10IUav0ePryQUV8FScfhyK13lB7cMiL1c4pBQyw47VTEaT2BlrnXWZNlemH48ersRWZrf0Fdn9ncoGqnRPVOIWEHrOE6JAxjfFADP5De8qU6aJl2JlVUz7zQHxWg7uP1SiEeYxgmHu2MA__&Key-Pair-Id=K15QRJLYKIFSLZ&Download-Request-ID=1579507079348788'
-    llama31_708B = 'https://llama3-1.llamameta.net/*?Policy=eyJTdGF0ZW1lbnQiOlt7InVuaXF1ZV9oYXNoIjoiN3ZkeWIzcGZzdDcwZ2owNnU2bnF3YzN2IiwiUmVzb3VyY2UiOiJodHRwczpcL1wvbGxhbWEzLTEubGxhbWFtZXRhLm5ldFwvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMzI5OTUwNX19fV19&Signature=SdmVNvgmWlZGwmJt1PQxZKtr%7ERuV6JxDoEpotqqjy7bSIkXNBWsx7Z53sD11DmKRmFJJ13KBb8fUcAaQWZkkq39GIs-ezbSJ2doUqAE9qQSKO-f9kSXukV9fh1Eerj9nzUmotRokixDShWhKUbVPd87an7B1vnertNvn3Ru1J22JdlCVyOCraCUgmSyfXlJ-U2pOWXnTgR6Upc-iwMhk%7EuE9ijB3n13xkBvrnabO24ERaYJLJ%7EOJj-xzDMOKd7Rdpi8DTYXyTvC-rcX9zkuWpXLZ46KyPTknDrVFGXoaB5zYSYS2T09QMDnLilsXRajmGVI12FR7deCLjYb0PSm0Bw__&Key-Pair-Id=K15QRJLYKIFSLZ&Download-Request-ID=1319074459263371'
+    def select_question_filler(_question:str , _select:str):
+        _sele_text = ''
+        for _counter in range(len(_select)):
+            _sele_text = f'{_sele_text}    {_counter}:{_select[_counter]}'
+        _output = ollama.chat(model='llama2:13b-chat', messages=[
+            {'role':'system','content':'You have to choose answer most suitable with the asking question, reply questions using a single number (0,1,2,3).'},
+            {    'role': 'assistant',    'content': 'answer:'},
+            {
+                'role': 'user',
+                'content': f'{_question}? \n select from : {_sele_text}',
+            },
+        ])
+        return _output
+    def ask(_question:str , _select:str)->str:
+        while True:
+            _reply = chat_llama.select_question_filler(_question,_select)
+            try:
+                _ans = int(_reply['message']['content'][-1])
+                break
+            except:
+                continue
+        return _ans
 
-    def ask(_question:str)->str:
-        return _question
+if __name__ == '__main__':
+    q0,s0 = '下列何者不是 Python 的特色？',['免費','移植性高','簡單易學','編譯式語言']
+    q1,s1 = 'num = 96%5，num 的值為何？',['0','1','19','20']
+    print(chat_llama.ask(q1,s1))
+
+
 
 
 
