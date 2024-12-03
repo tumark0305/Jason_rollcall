@@ -4,6 +4,7 @@ from tqdm import tqdm
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+#from llama import chat_llama
 test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
 URL = f'https://sites.google.com/view/jasontem/'
 keyinID = 'b11007157'
@@ -25,17 +26,30 @@ class tool:
         _net.forward()
         _text = pytesseract.image_to_string(_img)
         return _text
+    def ask_llama(_data)->None:
+
+        return None
 class jason:
     class define:
         def __init__(self, _data):
             self.source = _data
-            self.question = jason.define.get_question(_data)
+            self.question = None
             self.answer = None
+            self.type = None
             self.error = False
+            jason.define.get_question(self ,_data)
             return None
-        @staticmethod
-        def get_question(_input_driver)->str:
-            _data = _input_driver.find_elements(By.CSS_SELECTOR, 'span.M7eMe')[0].text
+        def get_question(self , _input_driver)->None:
+            def test_if_isfill():
+                _page_source = _input_driver.get_attribute("outerHTML")
+                if 'AB7Lab Id5V1' in _page_source:
+                    self.type = 'sele'
+                else:
+                    self.type = 'fill'
+                return None
+            test_if_isfill()
+            _data = _input_driver.find_element(By.CSS_SELECTOR, 'span.M7eMe').text
+
             try:
                 _text = _data
                 _img_element = _input_driver.find_element(By.CLASS_NAME, "y6GzNb")
@@ -43,7 +57,8 @@ class jason:
                 _output = f'{_text}\n\n{tool.url_to_text(_img_url)}'
             except:
                 _output = _data
-            return _output
+            self.question = _output
+            return None
     def find_sign_url()->str:
         def get_possible_url()->list[str]:
             _text = requests.get(URL).text
@@ -103,14 +118,18 @@ class jason:
         _questions = driver.find_elements(By.CSS_SELECTOR, 'div.Qr7Oae[role="listitem"]')
         _all_questions = []
         for _quest in _questions:
-            _all_questions.append(jason.define(_quest))
+                _all_questions.append(jason.define(_quest))
+        #solve q
+        for _cell in _all_questions:
+            tool.ask_llama(_cell)
         return None
     def main():
-        #_url = jason.find_sign_url()
+        _url = jason.find_sign_url()
         jason.write_form(test_form_URL)
 
 
 if __name__ == '__main__':
+    #chat_llama.ask('who r u ?')
     jason.main()
 
 
