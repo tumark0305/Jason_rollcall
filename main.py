@@ -6,9 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 
 from llama import chat_llama
+silent_run = True
 test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
 URL = f'https://sites.google.com/view/jasontem/'
 keyinID = 'b11007157'
@@ -184,7 +186,16 @@ class jason:
             _f = open(_path,'w')
             _f.write(_text)
             _f.close()
-        driver = webdriver.Chrome()
+        def get_driver():
+            if silent_run:
+                options = Options()
+                options.add_argument('--headless')
+                options.add_argument('--disable-gpu')
+                _output = webdriver.Chrome( options=options)
+            else:
+                _output = webdriver.Chrome()
+            return _output
+        driver = get_driver()
         driver.get(_url)
         _page_source = driver.page_source
         _questions = driver.find_elements(By.CSS_SELECTOR, 'div.Qr7Oae[role="listitem"]')
@@ -196,19 +207,29 @@ class jason:
             tool.ask_llama(_cell)
         write_log(_all_questions)
         jason.fill_answer(_all_questions)
-        _input_data = 'y'
-        #_input_data = input('送出表單? y/N')
+        if silent_run:
+            _input_data = 'y'
+        else:
+            _input_data = input('送出表單? y/N')
         if _input_data=='y':
             press_send()
         driver.quit()
         return None
     def main():
-        _url = jason.find_sign_url()
-        jason.write_form(_url)
+        if silent_run:
+            jason.write_form(test_form_URL)
+        else:
+            _url = jason.find_sign_url()
+            jason.write_form(test_form_URL)
 
 
 if __name__ == '__main__':
-    jason.main()
+    if silent_run:
+        for i in range(100):
+            jason.main()
+    else:
+        jason.main()
+    
 
 
 
