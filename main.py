@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 
 from llama import chat_llama
-silent_run = True
+silent_run = False
 test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
 URL = f'https://sites.google.com/view/jasontem/'
 keyinID = 'b11007157'
@@ -220,7 +220,7 @@ class jason:
             jason.write_form(test_form_URL)
         else:
             _url = jason.find_sign_url()
-            jason.write_form(test_form_URL)
+            jason.write_form(_url)
 
 
 if __name__ == '__main__':
