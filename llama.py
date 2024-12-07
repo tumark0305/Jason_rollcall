@@ -1,11 +1,11 @@
 ﻿import ollama
-
+CHAT_MODEL = 'llama2:13b-chat'
 class chat_llama:
-    def select_question_filler(_question:str , _select:str):
+    def select_question_filler(_question:str , _select:list[str]):
         _sele_text = ''
         for _counter in range(len(_select)):
             _sele_text = f'{_sele_text}    {_counter}:{_select[_counter]}'
-        _output = ollama.chat(model='llama2:13b-chat', messages=[
+        _output = ollama.chat(model=CHAT_MODEL, messages=[
             {'role':'system','content':'You have to choose answer most suitable with the asking question, reply questions using a single number (0,1,2,3).'},
             {    'role': 'assistant',    'content': 'answer:'},
             {
@@ -14,11 +14,12 @@ class chat_llama:
             },
         ])
         return _output
-    def ask(_question:str , _select:str)->str:
+    def ask(_question:str , _select:list[str])->str:
         while True:
             _reply = chat_llama.select_question_filler(_question,_select)
             try:
                 _ans = int(_reply['message']['content'][-1])
+                _test_reach = _select[_ans]
                 break
             except:
                 continue

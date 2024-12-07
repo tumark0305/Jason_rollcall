@@ -11,11 +11,9 @@ from datetime import datetime
 
 from llama import chat_llama
 silent_run = False
-test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
-URL = f'https://sites.google.com/view/jasontem/'
+
 keyinID = 'b11007157'
 keyinNAME = '我是機器人0'
-target = 'LLaMA 2-13B'
 class tool:
     def url_to_text(_url:str)->str:
         _save_path = f'{os.getcwd()}\\caches'
@@ -40,16 +38,15 @@ class tool:
         elif _q == jason.NAME_find:
             _output = keyinNAME
         else:
-            while True:
-                _output = chat_llama.ask(_q,_s)
-                if _output<len(_s):
-                    break
+            _output = chat_llama.ask(_q,_s)
         _data.answer = _output
         return None
 class jason:
     ID_find = '學號'
     NAME_find = '姓名'
     _log_path = f'{os.getcwd()}\\log'
+    test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
+    URL = f'https://sites.google.com/view/jasontem/'
     class define:
         def __init__(self,_main_driver , _data):
             self.driver = _main_driver
@@ -101,14 +98,14 @@ class jason:
 
     def find_sign_url()->str:
         def get_possible_url()->list[str]:
-            _text = requests.get(URL).text
+            _text = requests.get(jason.URL).text
             _list = _text.split('"')
             _new_list = []
             for _test in _list:
                 if 'jasontem' in _test and  _test.startswith('/view/'):
                     _new_list.append(_test)
             _new_list = list(set(_new_list))
-            _all_url_list = [URL]
+            _all_url_list = [jason.URL]
             return [f'https://sites.google.com{_url}' for _url in _new_list]
         def find_google_doc(_all_url:list[str]):
             output = []
@@ -127,7 +124,7 @@ class jason:
                         _output.append(_finder.split('>')[1])
                 return _output[0]
             _text = 'which might be the right URL?\n'
-            _urls.append(test_form_URL)
+            _urls.append(jason.test_form_URL)
             for _i ,_cell in enumerate(_urls):
                 _text = f'{_text}{_i}.   {_cell}\nTitle : {get_title(_cell)}\n\n'
             os.system('cls' if os.name=='nt' else 'clear')
@@ -136,8 +133,8 @@ class jason:
                 _input_data = input(f'>>>    ')
                 try:
                     _selector = int(_input_data)
-                except:
-                    print('Unreconized number.')
+                except Exception as _e:
+                    print(f'Unreconized number. \nError:{_e}')
                     continue
                 finally:
                     if _selector <= len(_urls):
@@ -208,16 +205,16 @@ class jason:
         write_log(_all_questions)
         jason.fill_answer(_all_questions)
         if silent_run:
-            _input_data = 'y'
+            press_send()
         else:
             _input_data = input('送出表單? y/N')
-        if _input_data=='y':
-            press_send()
+            if _input_data=='y':
+                press_send()
         driver.quit()
         return None
     def main():
         if silent_run:
-            jason.write_form(test_form_URL)
+            jason.write_form(jason.test_form_URL)
         else:
             _url = jason.find_sign_url()
             jason.write_form(_url)
