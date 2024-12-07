@@ -8,12 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime
-
 from llama import chat_llama
-silent_run = False
-
-keyinID = 'b11007157'
-keyinNAME = '我是機器人0'
+silent_run = True
 class tool:
     def url_to_text(_url:str)->str:
         _save_path = f'{os.getcwd()}\\caches'
@@ -34,21 +30,23 @@ class tool:
         _q = _data.question
         _s = _data.select
         if _q == jason.ID_find:
-            _output = keyinID
+            _output = _data.ID
         elif _q == jason.NAME_find:
-            _output = keyinNAME
+            _output = _data.NAME
         else:
             _output = chat_llama.ask(_q,_s)
         _data.answer = _output
         return None
 class jason:
+    keyinID = 'b11007157'
+    keyinNAME = '我是機器人'
     ID_find = '學號'
     NAME_find = '姓名'
     _log_path = f'{os.getcwd()}\\log'
     test_form_URL = f'https://docs.google.com/forms/d/e/1FAIpQLSdUTn-QCfLkyHBM9jQtuH0zJ9jpv-OSsZpCrNb8aSD_y1TYdQ/viewform?usp=sf_link'
     URL = f'https://sites.google.com/view/jasontem/'
     class define:
-        def __init__(self,_main_driver , _data):
+        def __init__(self,_main_driver , _data , _counter:int=0):
             self.driver = _main_driver
             self.source = _data
             self.question = None
@@ -57,6 +55,8 @@ class jason:
             self.error = False
             self.select = []
             self.select_check_box_loc = []
+            self.ID = f'{jason.keyinID}'
+            self.NAME = f'{jason.keyinNAME}{_counter}'
             jason.define.get_question(self ,_data)
             jason.define.get_selection(self ,_data)
             return None
@@ -157,7 +157,7 @@ class jason:
                 _question.select_check_box_loc[_question.answer].click()
             pass
         return None
-    def write_form(_url:str)->None:
+    def write_form(_url:str , _counter:int=0)->None:
         def press_send():
             _send_buttom = driver.find_element(By.CSS_SELECTOR, '.uArJ5e.UQuaGc.Y5sE8d.VkkpIf.QvWxOd')
             _buttom = WebDriverWait(driver, 10).until(
@@ -198,7 +198,7 @@ class jason:
         _questions = driver.find_elements(By.CSS_SELECTOR, 'div.Qr7Oae[role="listitem"]')
         _all_questions = []
         for _quest in _questions:
-            _all_questions.append(jason.define(driver , _quest))
+            _all_questions.append(jason.define(driver , _quest , _counter))
         #solve q
         for _cell in _all_questions:
             tool.ask_llama(_cell)
@@ -214,18 +214,15 @@ class jason:
         return None
     def main():
         if silent_run:
-            jason.write_form(jason.test_form_URL)
+            for i in range(100):
+                jason.write_form(jason.test_form_URL , i)
         else:
             _url = jason.find_sign_url()
             jason.write_form(_url)
 
 
 if __name__ == '__main__':
-    if silent_run:
-        for i in range(100):
-            jason.main()
-    else:
-        jason.main()
+    jason.main()
     
 
 
