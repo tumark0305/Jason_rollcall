@@ -1,4 +1,4 @@
-﻿import os,requests,pyperclip,cv2,pytesseract
+﻿import os,requests,cv2,pytesseract
 import numpy as np
 from tqdm import tqdm
 from selenium import webdriver
@@ -19,11 +19,6 @@ class tool:
         _text = tool.img_to_text(_img)
         return _text
     def img_to_text(_img)->str:
-        _net = cv2.dnn.readNet("frozen_east_text_detection.pb")
-        _blob = cv2.dnn.blobFromImage(_img, 1.0, (320, 320), (123.68, 116.78, 103.94), True, crop=False)
-        _net.setInput(_blob)
-        _data = _net.getUnconnectedOutLayersNames()
-        _net.forward()
         _text = pytesseract.image_to_string(_img)
         return _text
     def ask_llama(_data)->None:
